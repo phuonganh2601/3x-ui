@@ -11,7 +11,8 @@ import (
 	"x-ui/database/model"
 	"x-ui/xray"
 
-	"gorm.io/driver/sqlite"
+	_ "github.com/ncruces/go-sqlite3/embed"
+	"github.com/ncruces/go-sqlite3/gormlite"
 	"gorm.io/gorm"
 	"gorm.io/gorm/logger"
 )
@@ -86,7 +87,7 @@ func InitDB(dbPath string) error {
 	c := &gorm.Config{
 		Logger: gormLogger,
 	}
-	db, err = gorm.Open(sqlite.Open(dbPath), c)
+	db, err = gorm.Open(gormlite.Open(dbPath), c)
 	if err != nil {
 		return err
 	}

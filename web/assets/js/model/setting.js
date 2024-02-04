@@ -36,7 +36,7 @@ class AllSetting {
         this.subShowInfo = false;
         this.subURI = '';
 
-        this.timeLocation = "Asia/Tehran";
+        this.timeLocation = "Asia/Ho_Chi_Minh";
 
         if (data == null) {
             return

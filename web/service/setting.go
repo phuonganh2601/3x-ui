@@ -35,7 +35,7 @@ var defaultValueMap = map[string]string{
 	"expireDiff":         "0",
 	"trafficDiff":        "0",
 	"remarkModel":        "-ieo",
-	"timeLocation":       "Asia/Tehran",
+	"timeLocation":       "Asia/Ho_Chi_Minh",
 	"tgBotEnable":        "false",
 	"tgBotToken":         "",
 	"tgBotProxy":         "",

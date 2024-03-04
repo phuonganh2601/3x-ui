@@ -39,7 +39,7 @@ class AllSetting {
         this.subJsonURI = '';
         this.subJsonFragment = '';
 
-        this.timeLocation = "Asia/Tehran";
+        this.timeLocation = "Asia/Ho_Chi_Minh";
 
         if (data == null) {
             return

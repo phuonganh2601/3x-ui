@@ -89,7 +89,7 @@ jobs:
         run: |
           BUILD_TAG=$(cat config/version)
           sed -i 's/Tehran/Ho_Chi_Minh/Ig' Dockerfile web/assets/js/model/setting.js web/service/setting.go
-          sed -i 's/mhsanaei/phuonganh2601/Ig; s/3x-ui\/main/3x-ui\/custom/Ig; s/3x-ui\/master/3x-ui\/custom/Ig'; s/3x-ui\/raw\/main/3x-ui\/raw\/custom/Ig' docker-compose.yml install.sh x-ui.sh
+          sed -i 's/mhsanaei/phuonganh2601/Ig; s/3x-ui\/main/3x-ui\/custom/Ig; s/3x-ui\/master/3x-ui\/custom/Ig; s/3x-ui\/raw\/main/3x-ui\/raw\/custom/Ig' docker-compose.yml install.sh x-ui.sh
           if ! grep -q "time/tzdata" main.go; then
             sed -i 's|"syscall"|"syscall"\n\t_ "time\/tzdata"|Ig' main.go
           fi

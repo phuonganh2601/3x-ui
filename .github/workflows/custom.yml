@@ -1,0 +1,180 @@
+name: Custom Build 3X-UI
+run-name: ${{ inputs.function }} 3X-UI
+
+on:
+  workflow_dispatch:
+    inputs:
+      function:
+        description: "Select function"
+        required: true
+        default: "Build"
+        type: choice
+        options:
+          - "Update"
+          - "Build"
+          - "Update & Build"
+      amd64:
+        description: "AMD64"
+        required: true
+        default: false
+        type: boolean
+      i386:
+        description: "i386"
+        required: true
+        default: false
+        type: boolean
+      arm64:
+        description: "ARM64"
+        required: true
+        default: false
+        type: boolean
+      armv7:
+        description: "ARMv7"
+        required: true
+        default: false
+        type: boolean
+      mips:
+        description: "MIPS"
+        required: true
+        default: false
+        type: boolean
+      windows:
+        description: "Windows"
+        required: true
+        default: false
+        type: boolean
+      vps:
+        description: "Send file to VPS"
+        required: true
+        default: true
+        type: boolean
+      telegram:
+        description: "Send file to Telegram"
+        required: true
+        default: false
+        type: boolean
+      release:
+        description: "Release to Github"
+        required: true
+        default: false
+        type: boolean
+
+jobs:
+  build:
+    name: ${{ inputs.function }}
+    runs-on: ubuntu-20.04
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        
+      - name: Setup Go
+        uses: actions/setup-go@v5
+        with:
+          go-version: '1.22'
+
+      - name: Install dependencies
+        run: |
+          sudo apt-get update
+          if [[ "${{ inputs.function }}" == *"Update"* ]]; then
+            go get github.com/ncruces/go-sqlite3
+            go get github.com/ncruces/go-sqlite3/gormlite
+          fi
+          if [[ "${{ inputs.function }}" == *"Build"* ]]; then
+            sudo apt install wget sshpass upx zip
+            pip install telegram-send
+          fi
+
+      - name: Update 3X-UI
+        if: contains(inputs.function, 'Update')
+        run: |
+          BUILD_TAG=$(cat config/version)
+          sed -i 's/Tehran/Ho_Chi_Minh/Ig' Dockerfile web/assets/js/model/setting.js web/service/setting.go
+          sed -i 's/mhsanaei/phuonganh2601/Ig; s/3x-ui\/main/3x-ui\/custom/Ig; s/3x-ui\/master/3x-ui\/custom/Ig; s/3x-ui\/raw\/main/3x-ui\/raw\/custom/Ig' docker-compose.yml install.sh x-ui.sh
+          if ! grep -q "time/tzdata" main.go; then
+            sed -i 's|"syscall"|"syscall"\n\t_ "time\/tzdata"|Ig' main.go
+          fi
+          sed -i 's/{{ \.host }}-{{ i18n \.title}}/{{ i18n \.title}} - Huy Hoàng IT/Ig' web/html/common/head.html
+          sed -i 's/3xipl/ip-limit/Ig' xray/process.go
+          sed -i 's|"gorm\.io/driver/sqlite"|_ "github.com/ncruces/go-sqlite3/embed"\n\t"github.com/ncruces/go-sqlite3/gormlite"|g' database/db.go
+          sed -i 's/sqlite\.Open/gormlite.Open/g' database/db.go
+          wget https://huyhoangit.net/README.md -O README.md
+          wget https://huyhoangit.net/translate.vi_VN.toml.txt -O web/translation/translate.vi_VN.toml
+          wget https://huyhoangit.net/robot.ico -O web/assets/favicon.ico
+          go mod tidy
+          echo "BUILD_TAG=v$BUILD_TAG" >> $GITHUB_ENV
+
+      - name: Commit and Push
+        if: contains(inputs.function, 'Update')
+        uses: devops-infra/action-commit-push@master
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          commit_message: ${{ env.BUILD_TAG }}
+
+      - name: Build 3X-UI
+        if: contains(inputs.function, 'Build')
+        run: |
+          BUILD_DATE=$(TZ=Asia/Ho_Chi_Minh date +'%Y.%m.%d.%H%M')
+          BUILD_TAG=$(cat config/version)
+          echo -e "Version $BUILD_TAG\tBuild $BUILD_DATE\n" > build_output.txt
+          export CGO_ENABLED=0
+          export GOOS=linux
+          if [[ "${{ inputs.amd64 }}" == "true" ]]; then
+            GOARCH=amd64 go build -trimpath -ldflags="-s -w -buildid=" -o xui-amd64 -v main.go
+          fi
+          if [[ "${{ inputs.i386 }}" == "true" ]]; then
+            GOARCH=386 go build -trimpath -ldflags="-s -w -buildid=" -o xui-i386 -v main.go
+          fi
+          if [[ "${{ inputs.arm64 }}" == "true" ]]; then
+            GOARCH=arm64 go build -trimpath -ldflags="-s -w -buildid=" -o xui-arm64 -v main.go
+          fi
+          if [[ "${{ inputs.armv7 }}" == "true" ]]; then
+            GOARCH=arm GOARM=7 go build -trimpath -ldflags="-s -w -buildid=" -o xui-armv7 -v main.go
+          fi
+          if [[ "${{ inputs.mips }}" == "true" ]]; then
+            GOARCH=mipsle GOMIPS=softfloat go build -trimpath -ldflags="-s -w -buildid=" -o xui-mipsle -v main.go
+          fi
+          if [[ "${{ inputs.windows }}" == "true" ]]; then
+            sed -i 's/\/etc\/x-ui/bin/' config/config.go
+            sed -i 's/\/var\/log/log/' config/config.go
+            GOOS=windows GOARCH=amd64 go build -trimpath -ldflags="-s -w -buildid=" -o xui-windows-amd64.exe -v main.go
+          fi
+          upx --best --lzma xui-* >> build_output.txt
+          echo "BUILD_DATE=Build $BUILD_DATE" >> $GITHUB_ENV
+          echo "BUILD_TAG=v$BUILD_TAG" >> $GITHUB_ENV
+          echo -e "BUILD_OUTPUT<<EOF\n$(cat build_output.txt)\nEOF" >> $GITHUB_ENV
+
+      - name: Send file to VPS
+        if: contains(inputs.function, 'Build') && inputs.vps
+        run: |
+          sshpass -p ${{ secrets.VPS_PASSWORD }} scp -o StrictHostKeyChecking=no build_output.txt ${{ secrets.VPS_USERNAME }}@${{ secrets.VPS_HOST }}:${{ secrets.VPS_PATH }}
+          sshpass -p ${{ secrets.VPS_PASSWORD }} scp -o StrictHostKeyChecking=no xui-* ${{ secrets.VPS_USERNAME }}@${{ secrets.VPS_HOST }}:${{ secrets.VPS_PATH }}
+
+      - name: Send file to Telegram
+        if: contains(inputs.function, 'Build') && inputs.telegram
+        run: |
+          echo -e "[telegram]\ntoken = ${{ secrets.TELEGRAM_TOKEN }}\nchat_id = ${{ secrets.CHAT_ID }}" > telegram-send.conf
+          zip -r "${{ env.BUILD_DATE }}.zip" xui-*
+          zip_size=$(du -b "${{ env.BUILD_DATE }}.zip" | awk '{print $1}')
+          if [ "$zip_size" -gt 50000000 ]; then
+              telegram-send --config telegram-send.conf "${{ env.BUILD_DATE }}"
+              telegram-send --config telegram-send.conf --file xui-*
+          else
+              telegram-send --config telegram-send.conf --file "${{ env.BUILD_DATE }}.zip"
+          fi
+
+      - name: Release to Github
+        if: contains(inputs.function, 'Build') && inputs.release
+        uses: svenstaro/upload-release-action@2.7.0
+        with:
+          repo_token: ${{ secrets.GITHUB_TOKEN }}
+          tag: ${{ env.BUILD_TAG }}
+          release_name: ${{ env.BUILD_TAG }}
+          file: ${{ env.BUILD_DATE }}.zip
+          file_glob: true
+          prerelease: false
+          make_latest: false
+          overwrite: true
+          body: |
+            ```
+            ${{ env.BUILD_OUTPUT }}
+            ```

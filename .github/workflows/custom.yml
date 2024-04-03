@@ -164,7 +164,7 @@ jobs:
 
       - name: Release to Github
         if: contains(inputs.function, 'Build') && inputs.release
-        uses: svenstaro/upload-release-action@2
+        uses: svenstaro/upload-release-action@v2
         with:
           repo_token: ${{ secrets.GITHUB_TOKEN }}
           tag: ${{ env.BUILD_TAG }}

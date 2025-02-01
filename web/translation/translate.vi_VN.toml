@@ -53,8 +53,8 @@
 "secretToken" = "Mã bí mật"
 "remained" = "Còn lại"
 "security" = "Bảo vệ"
-"secAlertTitle" = "Cảnh báo an ninh-Tiếng Việt by Ohoang7"
-"secAlertSsl" = "Kết nối này không an toàn; Vui lòng không nhập thông tin nhạy cảm cho đến khi TLS được kích hoạt để bảo vệ dữ liệu của Bạn"
+"secAlertTitle" = "Cảnh báo bảo mật"
+"secAlertSsl" = "Kết nối này không an toàn. Vui lòng không nhập thông tin nhạy cảm cho đến khi TLS được kích hoạt để bảo vệ dữ liệu của bạn."
 "secAlertConf" = "Một số cài đặt có thể dễ bị tấn công. Đề xuất tăng cường các giao thức bảo mật để ngăn chặn các vi phạm tiềm ẩn."
 "secAlertSSL" = "Bảng điều khiển thiếu kết nối an toàn. Vui lòng cài đặt chứng chỉ TLS để bảo vệ dữ liệu."
 "secAlertPanelPort" = "Cổng mặc định của bảng điều khiển có thể dễ bị tấn công. Vui lòng cấu hình một cổng ngẫu nhiên hoặc cụ thể."
@@ -179,6 +179,8 @@
 "IPLimitlogDesc" = "Lịch sử đăng nhập IP (trước khi kích hoạt điểm vào sau khi bị vô hiệu hóa bởi giới hạn IP, bạn nên xóa lịch sử)."
 "IPLimitlogclear" = "Xóa Lịch sử"
 "setDefaultCert" = "Đặt chứng chỉ từ bảng điều khiển"
+												 
+								   
 "telegramDesc" = "Vui lòng cung cấp ID Trò chuyện Telegram. (sử dụng lệnh '/id' trong bot) hoặc (@userinfobot)"
 "subscriptionDesc" = "Bạn có thể tìm liên kết gói đăng ký của mình trong Chi tiết, cũng như bạn có thể sử dụng cùng tên cho nhiều cấu hình khác nhau"
 "info" = "Thông tin"
@@ -338,6 +340,7 @@
 "blockConfigsDesc" = "Những tùy chọn này sẽ ngăn người dùng kết nối đến các giao thức và trang web cụ thể."
 "basicRouting" = "Định tuyến Cơ bản"
 "blockConnectionsConfigsDesc" = "Các tùy chọn này sẽ chặn lưu lượng truy cập dựa trên quốc gia được yêu cầu cụ thể."
+														
 "directConnectionsConfigsDesc" = "Kết nối trực tiếp đảm bảo rằng lưu lượng truy cập cụ thể không được định tuyến qua máy chủ khác."
 "blockips" = "Chặn IP"
 "blockdomains" = "Chặn Tên Miền"
@@ -355,8 +358,36 @@
 "RoutingStrategyDesc" = "Đặt chiến lược định tuyến tổng thể cho việc giải quyết DNS."
 "Torrent" = "Cấu hình sử dụng BitTorrent"
 "TorrentDesc" = "Thay đổi mẫu cấu hình để tránh việc người dùng sử dụng BitTorrent."
+															
+																									  
+							 
+								   
 "Family" = "Chặn phần mềm độc hại và nội dung người lớn"
 "FamilyDesc" = "Trình phân giải DNS của Cloudflare để chặn phần mềm độc hại và nội dung người lớn để bảo vệ gia đình."
+																													  
+									   
+										  
+																										   
+											
+																				 
+											  
+																				   
+					   
+																						   
+								 
+																									 
+						 
+																							 
+				   
+																						
+					 
+																						 
+					   
+																						   
+						 
+																							 
+															 
+																				
 "Inbounds" = "Đầu vào"
 "InboundsDesc" = "Thay đổi mẫu cấu hình để chấp nhận các máy khách cụ thể."
 "Outbounds" = "Đầu ra"
@@ -374,7 +405,7 @@
 "dnsLog" = "Nhật ký DNS"
 "dnsLogDesc" = "Có bật nhật ký truy vấn DNS không"
 "outboundTraffic" = "Outbounds Traffic"
-"outboundTrafficDesc" = "Có nên bật lưu lượng ra không"
+"outboundTrafficDesc" = "Có bật lưu lượng ra không"
 "maskAddress" = "Ẩn Địa Chỉ"
 "maskAddressDesc" = "Mặt nạ địa chỉ IP, khi được bật, sẽ tự động thay thế địa chỉ IP xuất hiện trong nhật ký."
 

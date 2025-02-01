@@ -12,7 +12,8 @@ import (
 	"x-ui/database/model"
 	"x-ui/xray"
 
-	"gorm.io/driver/sqlite"
+	_ "github.com/ncruces/go-sqlite3/embed"
+	"github.com/ncruces/go-sqlite3/gormlite"
 	"gorm.io/gorm"
 	"gorm.io/gorm/logger"
 )
@@ -88,7 +89,7 @@ func InitDB(dbPath string) error {
 	}
 
 	dsn := dbPath + "?cache=shared&_journal_mode=WAL&_synchronous=NORMAL"
-	db, err = gorm.Open(sqlite.Open(dsn), c)
+	db, err = gorm.Open(gormlite.Open(dsn), c)
 	if err != nil {
 		return err
 	}
